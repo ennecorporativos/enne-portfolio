@@ -344,14 +344,20 @@
   @media (min-width:861px) and (max-width:1160px){ .services-grid{grid-template-columns:repeat(2,1fr);} }
 
   /* ---------- PORTFOLIO SCROLL ---------- */
+  .pf-subhead{
+    font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--mute);
+    font-weight:700; margin:0 0 16px;
+  }
   .pf-scroll{
     width:100vw; margin-left:calc(50% - 50vw); overflow:hidden;
     -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
     mask-image:linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
   }
-  .pf-track{display:flex; width:max-content; animation:pfScroll 42s linear infinite;}
+  .pf-track{display:flex; width:max-content; animation:pfScroll 60s linear infinite;}
+  .pf-track.pf-reverse{animation-name:pfScrollReverse;}
   .pf-scroll:hover .pf-track, .pf-scroll:focus-within .pf-track{animation-play-state:paused;}
   @keyframes pfScroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  @keyframes pfScrollReverse{from{transform:translateX(-50%);} to{transform:translateX(0);}}
   @media (prefers-reduced-motion: reduce){ .pf-track{animation:none; overflow-x:auto;} }
 
   .pf-item{
@@ -687,9 +693,17 @@
       </div>
     </div>
 
+    <p class="pf-subhead wrap reveal">Fotos</p>
     <div class="pf-scroll reveal">
-      <div class="pf-track" id="pfTrack">
-        <!-- items injected by JS (duplicated for seamless loop) -->
+      <div class="pf-track" id="pfPhotoTrack">
+        <!-- photo items injected by JS (duplicated for seamless loop) -->
+      </div>
+    </div>
+
+    <p class="pf-subhead wrap reveal" style="margin-top:40px;">Vídeos</p>
+    <div class="pf-scroll reveal">
+      <div class="pf-track" id="pfVideoTrack">
+        <!-- video items injected by JS (duplicated for seamless loop) -->
       </div>
     </div>
   </section>
@@ -928,39 +942,53 @@
   lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLb(); });
   function closeLb(){ lightbox.style.display = 'none'; lbVideo.pause(); lbVideo.src = ''; }
 
-  // ---------- portfolio: horizontal auto-scrolling strip of photos + videos ----------
-  const PF_ITEMS = [
-    { type:'photo', src:'assets/evento-stage.jpg', cat:'Convenção', ti:'Abertura de ciclo comercial' },
-    { type:'photo', src:'assets/evento-plateia.jpg', cat:'Plateia', ti:'Ativação de equipe ao vivo' },
-    { type:'video', poster:'assets/video1-poster.jpg', video:'assets/video-energia.mp4', cat:'Vídeo', ti:'Energia no palco' },
-    { type:'video', poster:'assets/video2-poster.jpg', video:'assets/video-time.mp4', cat:'Vídeo', ti:'Reconhecimento' },
-    { type:'video', poster:'assets/video3-poster.jpg', video:'assets/video-banda.mp4', cat:'Vídeo', ti:'Show ao vivo' },
-    { type:'video', poster:'assets/video4-poster.jpg', video:'assets/video-festa.mp4', cat:'Vídeo', ti:'Ativação de marca' },
+  // ---------- portfolio: two separate horizontal auto-scrolling strips ----------
+  const PHOTOS = [
+    { src:'assets/evento-stage.jpg', cat:'Convenção', ti:'Abertura de ciclo comercial' },
+    { src:'assets/evento-plateia.jpg', cat:'Plateia', ti:'Ativação de equipe ao vivo' },
+    { src:'assets/pf-palco-abertura.jpg', cat:'Palco', ti:'Abertura da convenção' },
+    { src:'assets/pf-plateia-close.jpg', cat:'Plateia', ti:'Energia da plateia' },
+    { src:'assets/pf-mesas.jpg', cat:'Convenção', ti:'Preparação do salão' },
+    { src:'assets/pf-piscina.jpg', cat:'Convenção', ti:'Equipe a caminho do evento' },
+    { src:'assets/pf-tenda-dna.jpg', cat:'Confraternização', ti:'Dinâmica ao ar livre' },
+    { src:'assets/pf-bastidores.jpg', cat:'Bastidores', ti:'Bastidores do evento' },
+    { src:'assets/pf-plateia-vermelha.jpg', cat:'Plateia', ti:'Plateia em peso' },
+    { src:'assets/pf-festa-noturna.jpg', cat:'Confraternização', ti:'Festa noturna' },
+    { src:'assets/pf-palestra-growth.jpg', cat:'Treinamento', ti:'Palestra de carreira' },
+    { src:'assets/pf-regional-sp.jpg', cat:'Convenção', ti:'Regional São Paulo' },
   ];
-  const PHOTOS = PF_ITEMS.filter(i => i.type === 'photo');
+  const VIDEOS = [
+    { poster:'assets/video1-poster.jpg', video:'assets/video-energia.mp4', cat:'Vídeo', ti:'Energia no palco' },
+    { poster:'assets/video2-poster.jpg', video:'assets/video-time.mp4', cat:'Vídeo', ti:'Reconhecimento' },
+    { poster:'assets/video3-poster.jpg', video:'assets/video-banda.mp4', cat:'Vídeo', ti:'Show ao vivo' },
+    { poster:'assets/video4-poster.jpg', video:'assets/video-festa.mp4', cat:'Vídeo', ti:'Ativação de marca' },
+  ];
 
-  function pfItemHTML(item, photoIndex){
-    const img = item.type === 'photo' ? item.src : item.poster;
-    const playBtn = item.type === 'video'
-      ? '<div class="pf-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'
-      : '<div class="pf-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>';
-    const dataAttr = item.type === 'video' ? `data-video="${item.video}"` : `data-photo-index="${photoIndex}"`;
-    return `<div class="pf-item" data-type="${item.type}" ${dataAttr}>
-      <img src="${img}" alt="${item.ti}" loading="lazy" />
-      ${playBtn}
+  function pfPhotoHTML(item, i){
+    return `<div class="pf-item" data-type="photo" data-photo-index="${i}">
+      <img src="${item.src}" alt="${item.ti}" loading="lazy" />
+      <div class="pf-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+      <div class="pf-overlay"><div class="cat">${item.cat}</div><div class="ti">${item.ti}</div></div>
+    </div>`;
+  }
+  function pfVideoHTML(item){
+    return `<div class="pf-item" data-type="video" data-video="${item.video}">
+      <img src="${item.poster}" alt="${item.ti}" loading="lazy" />
+      <div class="pf-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       <div class="pf-overlay"><div class="cat">${item.cat}</div><div class="ti">${item.ti}</div></div>
     </div>`;
   }
 
-  const pfTrack = document.getElementById('pfTrack');
-  let photoCursor = 0;
-  const itemsHTML = PF_ITEMS.map(item => {
-    const idx = item.type === 'photo' ? photoCursor++ : null;
-    return pfItemHTML(item, idx);
-  }).join('');
-  pfTrack.innerHTML = itemsHTML + itemsHTML; // duplicate for seamless loop
+  const pfPhotoTrack = document.getElementById('pfPhotoTrack');
+  const photosHTML = PHOTOS.map(pfPhotoHTML).join('');
+  pfPhotoTrack.innerHTML = photosHTML + photosHTML; // duplicate for seamless loop
 
-  pfTrack.addEventListener('click', (e) => {
+  const pfVideoTrack = document.getElementById('pfVideoTrack');
+  pfVideoTrack.classList.add('pf-reverse');
+  const videosHTML = VIDEOS.map(pfVideoHTML).join('');
+  pfVideoTrack.innerHTML = videosHTML + videosHTML;
+
+  function onPfClick(e){
     const item = e.target.closest('.pf-item');
     if (!item) return;
     if (item.dataset.type === 'video') {
@@ -968,7 +996,9 @@
     } else {
       openPhotoLb(parseInt(item.dataset.photoIndex, 10));
     }
-  });
+  }
+  pfPhotoTrack.addEventListener('click', onPfClick);
+  pfVideoTrack.addEventListener('click', onPfClick);
 
   // photo lightbox with prev/next through all photos
   const photoLb = document.getElementById('photoLightbox');
