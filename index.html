@@ -334,11 +334,11 @@
   .service:hover::before{transform:translateY(0);}
   .service > *{position:relative; z-index:1;}
   .service:hover{color:var(--ink);}
-  .service{padding:32px 28px;}
-  .service .ico{width:26px; height:26px; margin-bottom:20px; stroke:var(--lime); transition:stroke .45s ease;}
+  .service{padding:20px 22px;}
+  .service .ico{width:20px; height:20px; margin-bottom:10px; stroke:var(--lime); transition:stroke .45s ease;}
   .service:hover .ico{stroke:var(--ink);}
-  .service h3{font-size:15.5px; font-weight:700; margin:0;}
-  .service .idx{position:absolute; top:22px; right:26px; font-size:10px; color:var(--mute-dim); font-variant-numeric:tabular-nums;}
+  .service h3{font-size:14px; font-weight:700; margin:0;}
+  .service .idx{position:absolute; top:16px; right:20px; font-size:9px; color:var(--mute-dim); font-variant-numeric:tabular-nums;}
   .service:hover .idx{color:rgba(10,10,9,0.5);}
   @media (max-width:860px){ .services-grid{grid-template-columns:1fr;} }
   @media (min-width:861px) and (max-width:1160px){ .services-grid{grid-template-columns:repeat(2,1fr);} }
@@ -406,18 +406,27 @@
   #plPrev{left:20px;} #plNext{right:20px;}
   @media (max-width:640px){ .pl-nav{width:40px; height:40px;} #plPrev{left:8px;} #plNext{right:8px;} }
 
+  /* ---------- SERVIÇOS + DIFERENCIAIS: compact, grouped together ---------- */
+  #servicos{padding-top:72px; padding-bottom:36px;}
+  #diferenciais{padding-top:0; padding-bottom:72px;}
+  #servicos .section-head, #diferenciais .section-head{margin-bottom:28px;}
+  @media (max-width:720px){
+    #servicos{padding-top:48px; padding-bottom:20px;}
+    #diferenciais{padding-top:0; padding-bottom:48px;}
+  }
+
   /* ---------- DIFERENCIAIS ---------- */
   .diff-list{border-top:1px solid var(--line);}
   .diff-row{
-    display:grid; grid-template-columns:90px 1fr; gap:32px; align-items:center;
-    padding:36px 0; border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:70px 1fr; gap:24px; align-items:center;
+    padding:18px 0; border-bottom:1px solid var(--line);
     transition:padding-left .4s cubic-bezier(.2,.8,.2,1);
   }
   .diff-row:hover{padding-left:10px;}
-  .diff-row .n{font-size:11.5px; color:var(--lime); font-weight:800; font-variant-numeric:tabular-nums;}
-  .diff-row h3{font-size:clamp(16px,1.8vw,20px); font-weight:700; letter-spacing:-0.01em;}
+  .diff-row .n{font-size:10.5px; color:var(--lime); font-weight:800; font-variant-numeric:tabular-nums;}
+  .diff-row h3{font-size:clamp(14px,1.6vw,17px); font-weight:700; letter-spacing:-0.01em;}
   @media (max-width:760px){
-    .diff-row{grid-template-columns:50px 1fr; gap:16px; padding:22px 0;}
+    .diff-row{grid-template-columns:40px 1fr; gap:12px; padding:14px 0;}
   }
 
   /* ---------- COMO FUNCIONA ---------- */
@@ -599,6 +608,7 @@
         <span>Fensa</span>
         <span>Philip Morris</span>
         <span>Claro</span>
+        <span>e mais</span>
       </div>
     </div>
   </div>
